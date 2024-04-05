@@ -3,7 +3,8 @@ title: Microsoft Office Phish
 layout: default
 parent: Client Side Execution
 ---
-# For 64-bit! [32-bit here](#for-32-bit)
+# For 64-bit!
+[32-bit here](#for-32-bit)
 
 First prepare the shellcode:
 
@@ -61,7 +62,8 @@ set lport PORT
 exploit
 ```
 
-# For 32-bit! [64-bit here](#for-64-bit)
+# For 32-bit!
+[64-bit here](#for-64-bit)
 
 First prepare the shellcode:
 
