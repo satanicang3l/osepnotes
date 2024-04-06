@@ -8,6 +8,8 @@ parent: Client Side Execution
 * LPSTR -> ByVal, As String
 * LPDWORD -> By Ref, As Long
 
+# Example:
+
 First look at the corresponding Microsoft site to find out the DLL it resides in, for example to use GetUserName API:
 
 [MSDN GetUserNameA]
