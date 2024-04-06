@@ -31,7 +31,7 @@ $Assemblies |
     $_.GetTypes()|
       ForEach-Object {
         $_ | Get-Member -Static| Where-Object {
-          $_.TypeName.Equals('Microsoft.Win32.UnsafeNativeMethods')
+          $_.TypeName.Contains('Microsoft.Win32.UnsafeNativeMethods')
         }
     } 2> $null
   }
