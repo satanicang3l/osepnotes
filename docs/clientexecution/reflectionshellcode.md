@@ -1,3 +1,10 @@
+---
+title: Reflection Shellcode
+layout: default
+parent: Client Side Execution
+---
+
+
 ```powershell
 function LookupFunc {
   Param ($moduleName, $functionName)
