@@ -51,7 +51,7 @@ $GetModuleHandle = $unsafeObj.GetMethod('GetModuleHandle')
 $GetModuleHandle.Invoke($null, @("user32.dll"))
 ```
 
-7. If you try to do a `$GetProcAddress = $unsafeObj.GetMethod('GetProcAddress')` you will get an error "Ambiguous match found.". Instead we need to do this for multiple occurence:
+7. If you try to do a `$GetProcAddress = $unsafeObj.GetMethod('GetProcAddress')` you will get an error "Ambiguous match found.". Instead we need to do this for multiple occurence (we are using tmp[0] which is the first entry):
 
 ```powershell
 $user32 = $GetModuleHandle.Invoke($null, @("user32.dll"))
