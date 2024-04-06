@@ -20,3 +20,19 @@ $Assemblies |
     } 2> $null
   }
 ```
+
+4. Next, perform a filter and search for the location that these APIs are located by adding `$_.Location`. Based on the results, they are `static` and the typename is `Microsoft.Win32.UnsafeNativeMethods` (Use `Contains` instead of `Equals` to avoid error).
+
+```powershell
+$Assemblies = [AppDomain]::CurrentDomain.GetAssemblies()
+$Assemblies |
+  ForEach-Object {
+    $_.Location
+    $_.GetTypes()|
+      ForEach-Object {
+        $_ | Get-Member -Static| Where-Object {
+          $_.TypeName.Equals('Microsoft.Win32.UnsafeNativeMethods')
+        }
+    } 2> $null
+  }
+```
