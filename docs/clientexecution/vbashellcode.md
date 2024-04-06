@@ -2,6 +2,7 @@
 title: VBA Shellcode
 layout: default
 parent: Client Side Execution
+nav_order: 3
 ---
 
 The theory is always to:
