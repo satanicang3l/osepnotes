@@ -75,3 +75,9 @@ function LookupFunc {
 @($moduleName)), $functionName))
 }
 ```
+
+9. To use the function above, do this:
+
+```powershell
+LookupFunc "user32.dll" "MessageBoxA"
+```
