@@ -2,6 +2,7 @@
 title: PowerShell Shellcode in Word
 layout: default
 parent: Client Side Execution
+nav_order: 2
 ---
 
 Similar to CSharp, the theory is to:
