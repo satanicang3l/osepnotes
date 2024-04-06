@@ -2,6 +2,7 @@
 title: HTML Smuggling
 layout: default
 parent: Client Side Execution
+nav_order: 4
 ---
 
 First generate a meterpreter shell:
