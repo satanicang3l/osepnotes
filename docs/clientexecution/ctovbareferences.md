@@ -39,6 +39,14 @@ In C, string is terminated by null byte, so we can use InStr to find out which c
 Instr(START FROM, STRING TO SEARCH, WHAT CHARACTER TO SEARCH) - 1
 ```
 
+The code:
+
+*Declares variables res (result of the function call), MyBuff (string buffer to store the username), MySize (size of the buffer), and strlen (length of the username).
+*Sets the size of the buffer (MySize) to 256.
+*Calls the GetUserName function passing the buffer MyBuff and its size MySize as parameters to retrieve the username. The result of the function call is stored in the variable res.
+*Calculates the length of the retrieved username by finding the position of the null character (vbNullChar) in the buffer (MyBuff) and subtracting 1.
+*Displays a message box showing the username retrieved from the buffer, using Left$ to extract the substring containing the username based on its length (strlen).
+
 # References:
 * LPSTR -> ByVal, As String
 * LPDWORD -> By Ref, As Long
