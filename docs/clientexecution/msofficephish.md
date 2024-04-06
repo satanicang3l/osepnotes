@@ -3,6 +3,12 @@ title: Microsoft Office Phish
 layout: default
 parent: Client Side Execution
 ---
+
+The theory is always to:
+1. Allocate memory with `VirtualAlloc(0, sizeOfShellcodeArray, &H3000, &H40)`
+2. Copy shellcode byte by byte into memory location with `RtlMoveMemory(destination, source, length)`
+3. Execute with `CreateThread(0, 0, startAddress, 0, 0, 0)`. startAddress here is the return value of `VirtualAlloc()` in step 1.
+
 # For 64-bit!
 [32-bit here](#for-32-bit)
 
