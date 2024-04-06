@@ -10,6 +10,9 @@ parent: Client Side Execution
 * HWND -> ByVal, As Long
 * LPCSTR -> ByVal, As String
 * UINT -> By Val, As Long
+* LPVOID -> ByVal, As LongPtr
+* SIZE_T -> By Val, As Long
+* DWORD -> By Val, As Long
 
 # Example 1:
 
