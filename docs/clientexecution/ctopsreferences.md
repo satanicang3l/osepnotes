@@ -38,7 +38,7 @@ Add-Type $User32
 Note:
 
  * `@` is for Here-String, which allows you to enter multiple lines of code like a line
- * The last line is to invoke the method MessageBox and passing the arguments to it
+ * The last line is to invoke the method `MessageBox` and passing the arguments to it
 
 # Example 2:
 Another example is on `GetUserName`:
