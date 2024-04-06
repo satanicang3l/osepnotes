@@ -5,14 +5,7 @@ parent: Client Side Execution
 ---
 
 # References:
-* LPSTR -> ByVal, As String
-* LPDWORD -> By Ref, As Long
-* HWND -> ByVal, As Long
-* LPCSTR -> ByVal, As String
-* UINT -> By Val, As Long
-* LPVOID -> ByVal, As LongPtr
-* SIZE_T -> By Val, As Long
-* DWORD -> By Val, As Long
+* \_Out\_ for buffer/variable/memory -> ByRef As Any or ByVal As Long
 
 # Example 1:
 
