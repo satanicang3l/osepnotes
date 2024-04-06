@@ -23,7 +23,7 @@ BOOL GetUserNameA(
 );
 ```
 
-Then proceed to declare and import the API name and DLL location (**Add PtrSafe before the Function in first line for 64-bit**):
+Then proceed to declare and import the API name and DLL location (**Add PtrSafe before the "Function" in first line for 64-bit**):
 
 ```vb
 Private Declare Function GetUserName Lib "advapi32.dll" Alias "GetUserNameA" (ByVal lpBuffer As String, ByRef nSize As Long) As Long
