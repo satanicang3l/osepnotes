@@ -1,7 +1,7 @@
 ---
 title: Unsafe Native Methods
 layout: default
-parent: Reflection Shell Code
+parent: Reflection Shellcode
 grand_parent: Client Side Execution
 nav_order: 1
 ---
