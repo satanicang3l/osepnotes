@@ -4,6 +4,12 @@ layout: default
 parent: General Usage
 ---
 
+PowerShell allow ps1:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted
+```
+
 * Regular Non-Staged
 
 ```
