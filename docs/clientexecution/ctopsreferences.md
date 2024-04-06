@@ -2,6 +2,7 @@
 title: C to Powershell References
 layout: default
 parent: Client Side Execution
+nav_order: 5
 ---
 
 # References:
