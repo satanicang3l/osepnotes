@@ -39,9 +39,9 @@ In C, string is terminated by null byte, so we can use InStr to find out which c
 Instr(START FROM, STRING TO SEARCH, WHAT CHARACTER TO SEARCH) - 1
 ```
 
-* References:
-LPSTR -> ByVal, As String
-LPDWORD -> By Ref, As Long
+# References:
+* LPSTR -> ByVal, As String
+* LPDWORD -> By Ref, As Long
 
 
 [MSDN GetUserNameA]: https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getusernamea
