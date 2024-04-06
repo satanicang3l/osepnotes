@@ -47,9 +47,9 @@ parent: Client Side Execution
 
 6. Then we can use the following search for the DLL base address (for example user32.dll):
 
-```powershell
-$GetModuleHandle.Invoke($null, @("user32.dll"))
-```
+    ```powershell
+    $GetModuleHandle.Invoke($null, @("user32.dll"))
+    ```
 
 7. If you try to do a `$GetProcAddress = $unsafeObj.GetMethod('GetProcAddress')` you will get an error "Ambiguous match found.". Instead we need to do this for multiple occurence (we are using tmp[0] which is the first entry):
 
