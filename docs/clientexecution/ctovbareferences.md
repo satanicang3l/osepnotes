@@ -35,7 +35,7 @@ End Function
 
 In C, string is terminated by null byte, so we can use InStr to find out which character is the null byte character, then get the length of character. The syntax is:
 
-```vb
+```
 Instr(START FROM, STRING TO SEARCH, WHAT CHARACTER TO SEARCH) - 1
 ```
 
