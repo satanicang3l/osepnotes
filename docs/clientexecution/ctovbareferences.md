@@ -2,6 +2,7 @@
 title: C to VBA References
 layout: default
 parent: Client Side Execution
+nav_order: 6
 ---
 
 # References:
