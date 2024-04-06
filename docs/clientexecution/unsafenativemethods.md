@@ -8,7 +8,7 @@ parent: Client Side Execution
 2. This can be achieved by using Win32 API `GetModuleHandle` and `GetProcAddress`.
 3. Since we cannot use them directly to avoid writing to disk, need to find assembly that we can use to invoke these API.
 
-```powershell
+    ```powershell
 $Assemblies = [AppDomain]::CurrentDomain.GetAssemblies()
 $Assemblies |
   ForEach-Object {
@@ -19,7 +19,7 @@ $Assemblies |
         }
     } 2> $null
   }
-```
+    ```
 
 4. Next, perform a filter and search for the location that these APIs are located by adding `$_.Location`. Based on the results, they are `static` and the typename is `Microsoft.Win32.UnsafeNativeMethods` (Use `Contains` instead of `Equals` to avoid error).
 
