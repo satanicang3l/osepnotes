@@ -4,6 +4,10 @@ layout: default
 parent: Client Side Execution
 ---
 
+# References:
+* LPSTR -> ByVal, As String
+* LPDWORD -> By Ref, As Long
+
 First look at the corresponding Microsoft site to find out the DLL it resides in, for example to use GetUserName API:
 
 [MSDN GetUserNameA]
@@ -17,7 +21,7 @@ BOOL GetUserNameA(
 );
 ```
 
-Then proceed to declare and import the API name and DLL location:
+Then proceed to declare and import the API name and DLL location (Add PtrSafe before the Function in first line for 64-bit):
 
 ```vb
 Private Declare Function GetUserName Lib "advapi32.dll" Alias "GetUserNameA" (ByVal lpBuffer As String, ByRef nSize As Long) As Long
@@ -47,9 +51,6 @@ The code:
 * Calculates the length of the retrieved username by finding the position of the null character (vbNullChar) in the buffer (MyBuff) and subtracting 1.
 * Displays a message box showing the username retrieved from the buffer, using Left$ to extract the substring containing the username based on its length (strlen).
 
-# References:
-* LPSTR -> ByVal, As String
-* LPDWORD -> By Ref, As Long
 
 
 [MSDN GetUserNameA]: https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getusernamea
