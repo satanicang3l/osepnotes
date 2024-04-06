@@ -9,16 +9,16 @@ parent: Client Side Execution
 3. Since we cannot use them directly to avoid writing to disk, need to find assembly that we can use to invoke these API.
 
     ```powershell
-$Assemblies = [AppDomain]::CurrentDomain.GetAssemblies()
-$Assemblies |
-  ForEach-Object {
-    $_.GetTypes()|
+    $Assemblies = [AppDomain]::CurrentDomain.GetAssemblies()
+    $Assemblies |
       ForEach-Object {
-        $_ | Get-Member -Static| Where-Object {
-          $_.TypeName.Contains('Unsafe')
-        }
-    } 2> $null
-  }
+        $_.GetTypes()|
+          ForEach-Object {
+            $_ | Get-Member -Static| Where-Object {
+              $_.TypeName.Contains('Unsafe')
+            }
+        } 2> $null
+      }
     ```
 
 4. Next, perform a filter and search for the location that these APIs are located by adding `$_.Location`. Based on the results, they are `static` and the typename is `Microsoft.Win32.UnsafeNativeMethods` (Use `Contains` instead of `Equals` to avoid error).
