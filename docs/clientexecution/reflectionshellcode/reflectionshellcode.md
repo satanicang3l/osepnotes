@@ -2,6 +2,7 @@
 title: Reflection Shellcode
 layout: default
 parent: Client Side Execution
+has_children: true
 nav_order: 1
 ---
 
