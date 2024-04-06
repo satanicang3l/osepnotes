@@ -15,7 +15,7 @@ using System;
 using System.Runtime.InteropServices;
 ```
 
-After that need to use Add-Type to use it from Powershell. An example to use MessageBox: (@ is for Here-String, which allows you to enter multiple lins of code like a line)
+After that need to use Add-Type to use it from Powershell. An example to use `MessageBox`: (`@` is for Here-String, which allows you to enter multiple lins of code like a line)
 
 ```powershell
 $User32 = @"
