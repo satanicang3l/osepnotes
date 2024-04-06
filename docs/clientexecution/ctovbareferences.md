@@ -7,6 +7,9 @@ parent: Client Side Execution
 # References:
 * LPSTR -> ByVal, As String
 * LPDWORD -> By Ref, As Long
+* HWND -> ByVal, As Long
+* LPCSTR -> ByVal, As String
+* UINT -> By Val, As Long
 
 # Example:
 
