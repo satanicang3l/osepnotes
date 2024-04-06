@@ -6,6 +6,7 @@ parent: Client Side Execution
 
 # References:
 * \_Out\_ for buffer/variable/memory -> ByRef As Any or ByVal As Long
+* LBound() and UBound() methods are used to find the first and last element of an array in VBA.
 
 # Example 1:
 
