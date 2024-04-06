@@ -3,6 +3,7 @@ title: Unsafe Native Methods
 layout: default
 parent: Reflection Shell Code
 grand_parent: Client Side Execution
+nav_order: 1
 ---
 
 1. To avoid writing to disk, we need to perform dynamic lookup of function address instead of `Add-Type` and `DllImport`. 
