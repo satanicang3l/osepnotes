@@ -76,9 +76,8 @@ Function MyMacro()
 End Function
 ```
 
-* The OR is used to combine flags
 * Val function is to convert hex string into numeric equivalent
-
+* The Or between the 2 Val functions is used to combine flags
 
 [MSDN GetUserNameA]: https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getusernamea
 [MSDN MessageBoxA]: https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxa
