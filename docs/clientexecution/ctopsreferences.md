@@ -41,7 +41,7 @@ Note:
  * The last line is to invoke the method MessageBox and passing the arguments to it
 
 # Example 2:
-Another example is on 'GetUserName':
+Another example is on `GetUserName`:
 
 ```powershell
 $random321 = @"
@@ -62,6 +62,10 @@ $username = $usernameBuilder.ToString().TrimEnd([char]::NULL)
 $username
 ```
 
+Note:
+
+* We add `using System.Text` here because if not, PowerShell will complaint about `StringBuilder` could not be found (It is in `System.Text`)
+* `$usernameBuilder` is a reference to the `StringBuilder` object, and passing it to `GetUserName` allows the function to directly manipulate the data stored in that object.
 
 [PInvoke Alternative 1]: https://www.p-invoke.net/
 [PInvoke Alternative 2]: https://www.pinvoke.dev/
