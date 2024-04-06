@@ -6,11 +6,11 @@ parent: Client Side Execution
 
 # References:
 * \_Out\_ for buffer/variable/memory -> ByRef As Any or ByVal As Long
-* LBound() and UBound() methods are used to find the first and last element of an array in VBA.
+* `LBound()` and `UBound()` methods are used to find the first and last element of an array in VBA.
 
 # Example 1:
 
-First look at the corresponding Microsoft site to find out the DLL it resides in, for example to use GetUserName API:
+First look at the corresponding Microsoft site to find out the DLL it resides in, for example to use `GetUserName` API:
 
 [MSDN GetUserNameA]
 
@@ -23,7 +23,7 @@ BOOL GetUserNameA(
 );
 ```
 
-Then proceed to declare and import the API name and DLL location (**Add PtrSafe before the "Function" in first line for 64-bit**):
+Then proceed to declare and import the API name and DLL location (**Add `PtrSafe` before the `Function` in first line for 64-bit**):
 
 ```vb
 Private Declare Function GetUserName Lib "advapi32.dll" Alias "GetUserNameA" (ByVal lpBuffer As String, ByRef nSize As Long) As Long
@@ -39,7 +39,7 @@ Function MyMacro()
 End Function
 ```
 
-In C, string is terminated by null byte, so we can use InStr to find out which character is the null byte character, then get the length of character. The syntax is:
+In C, string is terminated by null byte, so we can use `InStr` to find out which character is the null byte character, then get the length of character. The syntax is:
 
 ```
 Instr(START FROM, STRING TO SEARCH, WHAT CHARACTER TO SEARCH) - 1
@@ -49,9 +49,9 @@ The code:
 
 * Declares variables res (result of the function call), MyBuff (string buffer to store the username), MySize (size of the buffer), and strlen (length of the username).
 * Sets the size of the buffer (MySize) to 256.
-* Calls the GetUserName function passing the buffer MyBuff and its size MySize as parameters to retrieve the username. The result of the function call is stored in the variable res.
+* Calls the `GetUserName` function passing the buffer MyBuff and its size MySize as parameters to retrieve the username. The result of the function call is stored in the variable res.
 * Calculates the length of the retrieved username by finding the position of the null character (vbNullChar) in the buffer (MyBuff) and subtracting 1.
-* Displays a message box showing the username retrieved from the buffer, using Left$ to extract the substring containing the username based on its length (strlen).
+* Displays a message box showing the username retrieved from the buffer, using `Left$` to extract the substring containing the username based on its length (strlen).
 
 
 # Example 2:
@@ -73,8 +73,8 @@ Function MyMacro()
 End Function
 ```
 
-* Val function is to convert hex string into numeric equivalent
-* The Or between the 2 Val functions is used to combine flags
+* `Val` function is to convert hex string into numeric equivalent
+* The Or between the 2 `Val` functions is used to combine flags
 
 [MSDN GetUserNameA]: https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getusernamea
 [MSDN MessageBoxA]: https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxa
