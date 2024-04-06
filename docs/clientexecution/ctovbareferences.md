@@ -11,7 +11,7 @@ parent: Client Side Execution
 * LPCSTR -> ByVal, As String
 * UINT -> By Val, As Long
 
-# Example:
+# Example 1:
 
 First look at the corresponding Microsoft site to find out the DLL it resides in, for example to use GetUserName API:
 
@@ -57,5 +57,28 @@ The code:
 * Displays a message box showing the username retrieved from the buffer, using Left$ to extract the substring containing the username based on its length (strlen).
 
 
+# Example 2:
+
+[MSDN MessageBoxA]
+
+```vb
+Private Declare PtrSafe Function MessageBox Lib "user32.dll" Alias "MessageBoxA" (ByVal hWnd As Long, ByVal lpText As String, ByVal lpCaption As String, ByVal uType As Long) As Long
+
+Function MyMacro()
+  Dim myMessage As String
+  Dim res As Long
+  Dim myTitle As String
+  Dim myType As Long
+  myMessage = "Test Message A"
+  myTitle = "JustTest"
+  myType = Val("&H00000000L") Or Val("&H40000L")
+  res = MessageBox(0, myMessage, myTitle, myType)
+End Function
+```
+
+* The OR is used to combine flags
+* Val function is to convert hex string into numeric equivalent
+
 
 [MSDN GetUserNameA]: https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getusernamea
+[MSDN MessageBoxA]: https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxa
