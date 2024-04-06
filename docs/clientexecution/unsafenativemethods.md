@@ -37,17 +37,18 @@ $Assemblies |
   }
 ```
 
-5. Finally after we finally identify that it is coming from System.dll, we can use the following to search for the required API (in this case `GetModuleHandle`).
+5. After we identify that it is coming from System.dll, we can use the following to search for the required API (in this case `GetModuleHandle`).
 
 ```powershell
-$systemdll = ([AppDomain]::CurrentDomain.GetAssemblies() | Where-Object {
-$_.GlobalAssemblyCache -And $_.Location.Split('\\')[-1].Equals('System.dll') })
+$systemdll = ([AppDomain]::CurrentDomain.GetAssemblies() | Where-Object { $_.GlobalAssemblyCache -And $_.Location.Split('\\')[-1].Equals('System.dll') })
 $unsafeObj = $systemdll.GetType('Microsoft.Win32.UnsafeNativeMethods')
 $GetModuleHandle = $unsafeObj.GetMethod('GetModuleHandle')
 ```
 
-6. Finally we can use the following search for the DLL address (for example user32.dll):
+6. Then we can use the following search for the DLL base address (for example user32.dll):
 
 ```powershell
 $GetModuleHandle.Invoke($null, @("user32.dll"))
 ```
+
+7. 
