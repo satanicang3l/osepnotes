@@ -6,7 +6,7 @@ grand_parent: Client Side Execution
 nav_order: 3
 ---
 
-This first perform a lookup of address (refer to Unsafe Native Methods), then create the delegate type (refer to Delegate Type Reflection) and call `GetDelegateForFunctionPointer` to pass the address and the `DelegateType` to call `MessageBox`.
+This first perform a lookup of address (refer to [Unsafe Native Methods]), then create the delegate type (refer to [DelegateType Reflection]) and call `GetDelegateForFunctionPointer` to pass the address and the `DelegateType` to call `MessageBox`.
 
 ```powershell
 function LookupFunc {
@@ -35,3 +35,6 @@ $MyFunction = [System.Runtime.InteropServices.Marshal]::
 GetDelegateForFunctionPointer($MessageBoxA, $MyDelegateType)
 $MyFunction.Invoke([IntPtr]::Zero,"Hello World","This is My MessageBox",0)
 ```
+
+[Unsafe Native Methods]: https://satanicang3l.github.io/osepnotes/docs/clientexecution/reflectionshellcode/unsafenativemethods.html
+[DelegateType Reflection]: https://satanicang3l.github.io/osepnotes/docs/clientexecution/reflectionshellcode/delegatetypereflection.html
