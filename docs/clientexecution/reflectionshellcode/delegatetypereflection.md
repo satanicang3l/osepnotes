@@ -33,7 +33,7 @@ nav_order: 2
     $MyTypeBuilder = $MyModuleBuilder.DefineType('MyDelegateType', 'Class, Public, Sealed, AnsiClass, AutoClass', [System.MulticastDelegate])
     ```
 
-7. Put the function prototype into inside the type and let it become our custom delegate type. **(This depends on the API you would like to call! The example below is for `MessageBox`)**
+7. Put the function prototype into inside the type and let it become our custom delegate type. **(The last argument depends on the API you would like to call! The example below is for `MessageBox` which got IntPtr, String, String, int)**
 
     ```powershell
     $MyConstructorBuilder = $MyTypeBuilder.DefineConstructor('RTSpecialName, HideBySig, Public', [System.Reflection.CallingConventions]::Standard, @([IntPtr], [String], [String], [int]))
