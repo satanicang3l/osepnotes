@@ -10,9 +10,9 @@ nav_order: 2
 2. `Add-Type` can help you to do this, but since we want to do it in memory we need to manually the assembly and populate it with content.
 3. Create a new assembly object through the `AssemblyName` class by creating a new variable `$MyAssembly` and set it to the instantiated assembly object with the name "ReflectedDelegate".
 
-    ```powershell
-    $MyAssembly = New-Object System.Reflection.AssemblyName('ReflectedDelegate')
-    ```
+   ```powershell
+   $MyAssembly = New-Object System.Reflection.AssemblyName('ReflectedDelegate')
+   ```
     
 4. Configure access mode(permission) to be executable and not saved to disk. Use `DefineDynamicAssembly` method, supplying name in previous step, and the Run access mode.
 
