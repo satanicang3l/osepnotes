@@ -11,14 +11,14 @@ nav_order: 2
 3. Create a new assembly object through the `AssemblyName` class by creating a new variable `$MyAssembly` and set it to the instantiated assembly object with the name "ReflectedDelegate".
 
     ```powershell
-    $MyAssembly = New-Object System.Reflection.AssemblyName('ReflectedDelegate')
+$MyAssembly = New-Object System.Reflection.AssemblyName('ReflectedDelegate')
     ```
     
 4. Configure access mode(permission) to be executable and not saved to disk. Use `DefineDynamicAssembly` method, supplying name in previous step, and the Run access mode.
 
     ```powershell
-    $Domain = [AppDomain]::CurrentDomain
-    $MyAssemblyBuilder = $Domain.DefineDynamicAssembly($MyAssembly, [System.Reflection.Emit.AssemblyBuilderAccess]::Run)
+$Domain = [AppDomain]::CurrentDomain
+$MyAssemblyBuilder = $Domain.DefineDynamicAssembly($MyAssembly, [System.Reflection.Emit.AssemblyBuilderAccess]::Run)
     ```
 
 5. Create the main block of the assembly, which is Module. Use `DefineDynamicModule` to and pass the following to it: a module name and false, to not include symbol information.
