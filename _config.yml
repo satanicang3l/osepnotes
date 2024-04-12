@@ -37,4 +37,4 @@ search:
   # Focus the search input by pressing `ctrl + focus_shortcut_key` (or `cmd + focus_shortcut_key` on macOS)
   focus_shortcut_key: 'k'
 
-enable_copy_code_button: true
+enable_copy_code_button: FALSE
