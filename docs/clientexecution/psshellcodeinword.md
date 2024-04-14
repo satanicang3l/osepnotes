@@ -104,7 +104,7 @@ Sub AutoOpen()
 End Sub
 ```
 
-**(Try to use the one on top instead of this)** Add this to a Microsoft Word Macro `AutoOpen()`:
+Add this to a Microsoft Word Macro `AutoOpen()` **(without proxy aware and user agent)**:
 
 ```vb
 Sub MyMacro()
