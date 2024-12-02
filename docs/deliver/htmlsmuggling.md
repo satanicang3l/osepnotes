@@ -1,8 +1,8 @@
 ---
 title: HTML Smuggling
 layout: default
-parent: Client Side Execution
-nav_order: 4
+parent: Deliver
+nav_order: 1
 ---
 
 First generate a meterpreter shell:
@@ -17,7 +17,7 @@ Then base64 the whole thing:
 base64 /tmp/shell.exe
 ```
 
-Remove all **line break** or **new lines**
+Remove all **line break** or **new lines** from the base64 output
 
 Add the whole thing to below and serve as html (This works for all browser):
 

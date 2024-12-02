@@ -1,15 +1,9 @@
 ---
 title: Meterpreter
 layout: default
-parent: General Usage
+parent: Shell Preparation
 nav_order: 1
 ---
-
-PowerShell allow ps1:
-
-```powershell
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted
-```
 
 * Regular Non-Staged
 

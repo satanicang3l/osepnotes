@@ -1,7 +1,7 @@
 ---
-title: PowerShell Shellcode in Word
+title: Powershell (In Memory)
 layout: default
-parent: Client Side Execution
+parent: Shellcode
 nav_order: 2
 ---
 
