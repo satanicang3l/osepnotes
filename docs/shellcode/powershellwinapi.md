@@ -1,8 +1,8 @@
 ---
-title: Powershell (In Memory)
+title: Powershell and Win32 API (In Memory)
 layout: default
 parent: Shellcode
-nav_order: 2
+nav_order: 3
 ---
 
 Similar to CSharp, the theory is to:

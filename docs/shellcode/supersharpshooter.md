@@ -2,7 +2,7 @@
 title: SuperSharpShooter JScript (In Memory)
 layout: default
 parent: Shellcode
-nav_order: 4
+nav_order: 5
 ---
 
 1. First prepare a shell.txt using msfvenom:

