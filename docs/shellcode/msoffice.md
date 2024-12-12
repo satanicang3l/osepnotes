@@ -5,6 +5,8 @@ parent: Shellcode
 nav_order: 1
 ---
 
+Microsoft Office runs in 32 bit by default.
+
 The theory is always to:
 1. Allocate memory with `VirtualAlloc(0, sizeOfShellcodeArray, &H3000, &H40)`
 2. Copy shellcode byte by byte into memory location with `RtlMoveMemory(destination, source, length)`

