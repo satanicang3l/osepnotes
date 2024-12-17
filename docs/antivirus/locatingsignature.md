@@ -2,7 +2,7 @@
 title: Locating Signature (Less Effective)
 layout: default
 parent: Antivirus Evasion
-nav_order: 2
+nav_order: 4
 ---
 
 The theory behind is to split the binary into multiple pieces and perform scan on small pieces until the exact byte flagged is found.

