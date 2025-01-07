@@ -38,7 +38,7 @@ public class TestClass
     static extern UInt32 WaitForSingleObject(IntPtr hHandle, UInt32 dwMilliseconds);
     public TestClass()
     {
-        byte[] buf = xx;
+        byte[] buf = new byte[782] {};
 
         int size = buf.Length;
 
