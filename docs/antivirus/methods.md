@@ -10,6 +10,9 @@ nav_order: 1
 [Original Shellcode](#original-shellcode)\
 [Original VBA Code](#original-vba-code)
 
+## Disable AV after you got admin/SYSTEM ##
+1. `cmd /c "C:\Program Files\Windows Defender\MpCmdRun.exe" -RemoveDefinitions -All`
+
 
 ## Full Obfuscation VBA ##
 
